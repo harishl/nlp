@@ -1,9 +1,7 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -119,6 +117,18 @@ public class build_tagger {
 			System.out.println(ph.tagCount.size());
 			System.out.println(ph.bigramTagCount.size());
 			System.out.println(ph.bigramTagCount.get("<s>|IN"));
+			System.out.println(ph.tagVocabularyCount);
+			Iterator itr=ph.bigramTagCount.keySet().iterator();
+			k=0;
+			while(itr.hasNext())
+			{
+				k=k+ph.bigramTagCount.get(itr.next());
+			}
+			
+			System.out.println(sentences.size());
+			Double f=Math.exp(Math.log(new Double(ph.bigramTagCount.get("<s>|IN")+1))-Math.log(new Double(ph.tagVocabularyCount+sentences.size())));
+			System.out.println(f);
+			System.out.println(k);
 
 		} catch (FileNotFoundException e) {
 			System.out

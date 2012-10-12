@@ -9,6 +9,7 @@ public class POSHelper {
 	public HashMap<String, Integer> wordCount;
 	public HashMap<String, Integer> bigramWordCount;
 	public HashSet<String> breakTag; 
+	public long tagVocabularyCount;
 	POSHelper() {
 		pennTreeBankTagSet = new HashSet<String>();
 		tagCount = new HashMap<String, Integer>();
@@ -16,6 +17,7 @@ public class POSHelper {
 		bigramWordCount=new HashMap<String, Integer>();
 		bigramTagCount=new HashMap<String, Integer>();
 		breakTag=new HashSet<String>();
+		tagVocabularyCount=((45*45)*44)+90;
 		generatePennTreeBankTagSet();
 		intializeHashMap();
 	}
