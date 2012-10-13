@@ -1,8 +1,9 @@
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-public class POSHelper {
+public class POSHelper implements Serializable{
 	public HashSet<String> pennTreeBankTagSet;
 	public HashMap<String, Integer> tagCount;
 	public HashMap<String, Integer> bigramTagCount;
@@ -12,7 +13,7 @@ public class POSHelper {
 	public HashSet<String> wordVocabulary;
 	public HashMap<String,Integer> unkBigramWordCount;
 	public HashMap<String,Double> transitionProbability,emissionProbability;
-	
+	static final long serialVersionUID = -66184698411273252L;
 	public long tagVocabularyCount;
 	POSHelper() {
 		pennTreeBankTagSet = new HashSet<String>();

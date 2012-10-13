@@ -1,8 +1,12 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,8 +18,10 @@ public class build_tagger {
 	public static void main(String args[]) {
 		File file = new File("/home/user/NLP/a2_data/sents.train");
 		File tuneFile = new File("/home/user/NLP/a2_data/sents.devt");
+		File modelFile=new File("/home/user/NLP/a2_data/model_file");
 		FileReader read;
 		BufferedReader buffRead;
+		ObjectOutputStream out;
 		ph = new POSHelper();
 		try {
 			read = new FileReader(file);
@@ -24,6 +30,7 @@ public class build_tagger {
 			int i = 0;
 			int j = 0;
 			int k = 0;
+			
 			String bigramTags, wordTagPair;
 			boolean flag = true;
 			List<String> li = new ArrayList<String>();
@@ -166,6 +173,9 @@ public class build_tagger {
 			System.out.println(f);
 			System.out.println(ph.unkBigramWordCount.get("<unknown>|VB"));
 			System.out.println(ph.emissionProbability.size());
+			out=new ObjectOutputStream(new FileOutputStream(modelFile));
+			out.writeObject(ph);
+			out.close();
 
 		} catch (FileNotFoundException e) {
 			System.out
