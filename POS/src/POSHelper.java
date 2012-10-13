@@ -9,6 +9,10 @@ public class POSHelper {
 	public HashMap<String, Integer> wordCount;
 	public HashMap<String, Integer> bigramWordCount;
 	public HashSet<String> breakTag; 
+	public HashSet<String> wordVocabulary;
+	public HashMap<String,Integer> unkBigramWordCount;
+	public HashMap<String,Double> transitionProbability,emissionProbability;
+	
 	public long tagVocabularyCount;
 	POSHelper() {
 		pennTreeBankTagSet = new HashSet<String>();
@@ -17,7 +21,11 @@ public class POSHelper {
 		bigramWordCount=new HashMap<String, Integer>();
 		bigramTagCount=new HashMap<String, Integer>();
 		breakTag=new HashSet<String>();
-		tagVocabularyCount=((45*45)*44)+90;
+		unkBigramWordCount=new HashMap<String, Integer>();
+		wordVocabulary=new HashSet<String>();
+		transitionProbability=new HashMap<String, Double>();
+		emissionProbability=new HashMap<String, Double>();
+		tagVocabularyCount=(45*45)+90;
 		generatePennTreeBankTagSet();
 		intializeHashMap();
 	}
@@ -28,7 +36,7 @@ public class POSHelper {
 			tagCount.put(itr.next(), 0);
 		}
 
-	}
+	} 
 
 	public void generatePennTreeBankTagSet() {
 
