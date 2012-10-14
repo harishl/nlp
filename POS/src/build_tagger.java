@@ -1,10 +1,8 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -16,9 +14,10 @@ public class build_tagger {
 	static POSHelper ph;
 
 	public static void main(String args[]) {
-		File file = new File("/home/user/NLP/a2_data/sents.train");
-		File tuneFile = new File("/home/user/NLP/a2_data/sents.devt");
-		File modelFile=new File("/home/user/NLP/a2_data/model_file");
+		if (args.length == 3) {
+		File file = new File(args[0]);
+		File tuneFile = new File(args[1]);
+		File modelFile = new File(args[2]);
 		FileReader read;
 		BufferedReader buffRead;
 		ObjectOutputStream out;
@@ -27,15 +26,8 @@ public class build_tagger {
 			read = new FileReader(file);
 			buffRead = new BufferedReader(read);
 			String temp;
-			int i = 0;
-			int j = 0;
-			int k = 0;
-			
-			String bigramTags, wordTagPair;
-			boolean flag = true;
-			List<String> li = new ArrayList<String>();
-			String tag, word, prevTag;
-			int count = 0;
+			String bigramTags;
+			String tag, prevTag;
 			List<String> sentences = new ArrayList<String>();
 			List<String> tunedSentences = new ArrayList<String>();
 			while (null != (temp = buffRead.readLine())) {
@@ -71,12 +63,10 @@ public class build_tagger {
 
 			Iterator<String> sentenceIterator = sentences.iterator();
 			while (sentenceIterator.hasNext()) {
-				i++;
+
 				temp = sentenceIterator.next();
-				// System.out.println(temp);
 				StringTokenizer token = new StringTokenizer(temp, " ");
 				prevTag = token.nextToken();
-				wordTagPair = null;
 				while (token.hasMoreTokens()) {
 					StringTokenizer bigramToken = new StringTokenizer(
 							token.nextToken(), "/");
@@ -87,8 +77,6 @@ public class build_tagger {
 						for (int l = 1; l < countTokens; l++)
 							words.add(bigramToken.nextToken());
 						tag = bigramToken.nextToken();
-						if (tag.equals("32"))
-							System.out.println(bigramToken.countTokens());
 						addListofWordTags(words, tag);
 						if (ph.pennTreeBankTagSet.contains(tag)) {
 							ph.tagCount.put(tag, ph.tagCount.get(tag) + 1);
@@ -106,20 +94,12 @@ public class build_tagger {
 
 			}
 			ph.unkBigramWordCount = ph.bigramWordCount;
-			System.out.println("before tuning");
-			System.out.println("bigramWordCount" + ph.bigramWordCount.size());
-			System.out.println("tagCount" + ph.tagCount.size());
-			System.out.println("bigramTagCount"
-					+ ph.bigramTagCount.get("<s>|IN"));
-			System.out.println("tagVocabularyCount" + ph.tagVocabularyCount);
-			System.out.println("unkBigramWordCount"
-					+ ph.unkBigramWordCount.size());
+
 			Iterator<String> tuneSentIterator = tunedSentences.iterator();
 			while (tuneSentIterator.hasNext()) {
 				temp = tuneSentIterator.next();
 				StringTokenizer token = new StringTokenizer(temp, " ");
 				prevTag = token.nextToken();
-				wordTagPair = null;
 
 				while (token.hasMoreTokens()) {
 					StringTokenizer bigramToken = new StringTokenizer(
@@ -148,34 +128,10 @@ public class build_tagger {
 
 			}
 
-			System.out.println("after tuning");
-			System.out.println("bigramWordCount" + ph.bigramWordCount.size());
-			System.out.println("tagCount" + ph.tagCount.size());
-			System.out.println("bigramTagCount"
-					+ ph.bigramTagCount.size());
-			System.out.println("tagVocabularyCount" + ph.tagVocabularyCount);
-			System.out.println("unkBigramWordCount"
-					+ ph.unkBigramWordCount.size());
-			ph.startTagCount=sentences.size() + tunedSentences.size();
+			ph.startTagCount = sentences.size() + tunedSentences.size();
 			addOneSmoothing(ph.startTagCount);
 			calcEmissionProbabilityforUnkWords();
-			Iterator itr = ph.bigramTagCount.keySet().iterator();
-			k = 0;
-			while (itr.hasNext()) {
-				k = k + ph.bigramTagCount.get(itr.next());
-			}
-
-			System.out.println(sentences.size());
-			// Used for add one smoothing
-			Double f = Math.exp(Math.log(new Double(ph.bigramTagCount
-					.get("<s>|IN") + 1))
-					- Math.log(new Double(ph.tagVocabularyCount
-							+ sentences.size())));
-			System.out.println(f);
-			System.out.println(ph.unkBigramWordCount.get("<unknown>|VB"));
-			System.out.println(ph.emissionProbability.size());
-			
-			out=new ObjectOutputStream(new FileOutputStream(modelFile));
+			out = new ObjectOutputStream(new FileOutputStream(modelFile));
 			out.writeObject(ph);
 			out.close();
 
@@ -187,6 +143,14 @@ public class build_tagger {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		} else {
+			System.out.println("Need Three Parameters to run the POS tagger:\n"
+					+ "1. Training data file Name with path \n"
+					+ "2. Tuning data for unknown words file name\n"
+					+ "3. Model file name to store the computed probability values" +
+					"\n No Need to give path if all the files and code are in the same path just mention the file names");
+			System.exit(0);
+		}
 
 	}
 
@@ -197,7 +161,6 @@ public class build_tagger {
 			String wordTagpair = emissionProbabilityIterator.next();
 			String tag = wordTagpair
 					.substring(wordTagpair.lastIndexOf("|") + 1);
-			// System.out.println("tag: "+tag+" wordtag: "+wordTagpair);
 			Double prob = Math.exp(Math.log(ph.unkBigramWordCount
 					.get(wordTagpair)) - Math.log(ph.tagCount.get(tag)));
 			ph.emissionProbability.put(wordTagpair, prob);
@@ -307,7 +270,7 @@ public class build_tagger {
 				ph.transitionProbability.put(smoothString,
 						calcOneSmoothing(0, ph.tagCount.get(tagMinusOne)));
 		}
-		System.out.println("probMatrixsize:" + ph.transitionProbability.size());
+		
 	}
 
 	static Double calcOneSmoothing(int bigramtagcount, int tagminusonecount) {
