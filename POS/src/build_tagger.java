@@ -156,7 +156,8 @@ public class build_tagger {
 			System.out.println("tagVocabularyCount" + ph.tagVocabularyCount);
 			System.out.println("unkBigramWordCount"
 					+ ph.unkBigramWordCount.size());
-			addOneSmoothing(sentences.size() + tunedSentences.size());
+			ph.startTagCount=sentences.size() + tunedSentences.size();
+			addOneSmoothing(ph.startTagCount);
 			calcEmissionProbabilityforUnkWords();
 			Iterator itr = ph.bigramTagCount.keySet().iterator();
 			k = 0;
@@ -173,6 +174,7 @@ public class build_tagger {
 			System.out.println(f);
 			System.out.println(ph.unkBigramWordCount.get("<unknown>|VB"));
 			System.out.println(ph.emissionProbability.size());
+			
 			out=new ObjectOutputStream(new FileOutputStream(modelFile));
 			out.writeObject(ph);
 			out.close();

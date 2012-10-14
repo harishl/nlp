@@ -12,6 +12,7 @@ public class POSHelper implements Serializable{
 	public HashSet<String> breakTag; 
 	public HashSet<String> wordVocabulary;
 	public HashMap<String,Integer> unkBigramWordCount;
+	public int startTagCount;
 	public HashMap<String,Double> transitionProbability,emissionProbability;
 	static final long serialVersionUID = -66184698411273252L;
 	public long tagVocabularyCount;
